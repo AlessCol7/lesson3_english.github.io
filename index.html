@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Way of the Present</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Nunito:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#1f1409; --bg-mid:#2e1c0f; --panel:#3d2615;
+    --cream:#f5e6d3; --text-soft:#e0c3a3;
+    --orange:#e8823a; --orange-dim:#b25f26;
+    --red:#c1502e; --gold:#f0a830;
+    --sage:#7fae54; --slate:#5c7a8a;
+    --radius:18px;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; min-height:100vh; font-family:'Nunito', sans-serif; color: var(--cream); line-height:1.6;
+    background:
+      radial-gradient(ellipse 650px 480px at 20% 0%, rgba(232,130,58,0.14), transparent 55%),
+      radial-gradient(ellipse 650px 480px at 85% 10%, rgba(193,80,46,0.12), transparent 55%),
+      linear-gradient(180deg, var(--bg-deep), var(--bg-mid) 55%, var(--bg-deep));
+    padding: 0 18px 100px; overflow-x:hidden;
+  }
+  .sheet{ max-width: 740px; margin: 0 auto; position:relative; z-index:1; }
+  h1,h2,h3{ font-family:'Playfair Display', serif; font-weight:700; margin:0; }
+
+  #leaves{ position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+  .leaf{ position:absolute; top:-20px; font-size:16px; opacity:.75; animation: fall linear infinite; }
+  @keyframes fall{
+    0%{ transform:translateY(-20px) translateX(0) rotate(0deg); opacity:0; }
+    10%{ opacity:.8; }
+    50%{ transform:translateY(450px) translateX(30px) rotate(160deg); }
+    100%{ transform:translateY(920px) translateX(-10px) rotate(320deg); opacity:0; }
+  }
+  @media (prefers-reduced-motion: reduce){ #leaves{ display:none; } }
+
+  .hero{ text-align:center; padding: 46px 0 30px; position:relative; z-index:1; }
+  .hero-inner{ opacity:0; animation: fadeIn 0.8s ease forwards 0.1s; }
+  @keyframes fadeIn{ from{ opacity:0; transform:translateY(10px); } to{ opacity:1; transform:translateY(0); } }
+  @media (prefers-reduced-motion: reduce){ .hero-inner{ animation:none; opacity:1; } }
+  .crest{ font-size:3rem; margin-bottom:6px; }
+  .hero h1{ font-size:2.1rem; letter-spacing:0.01em; }
+  .hero .tagline{ font-family:'Nunito', sans-serif; font-weight:800; font-style:italic; font-size:1rem; color: var(--gold); margin-top:12px; }
+  .hero p.sub{ font-weight:600; font-size:1rem; color: var(--text-soft); max-width:52ch; margin:14px auto 0; }
+
+  .print-btn{ display:block; margin: 20px auto; font-family:'Nunito',sans-serif; font-weight:800; font-size:0.9rem; color:#2a1505; background: var(--cream); border:none; border-radius:999px; padding:9px 22px; cursor:pointer; }
+  .print-btn:hover{ filter:brightness(1.05); }
+
+  #progress-wrap{ display:flex; gap:6px; flex-wrap:wrap; justify-content:center; margin: 18px 0 14px; }
+  .progress-leaf{ font-size:1.25rem; opacity:.3; filter:grayscale(100%); transition: opacity .4s ease, filter .4s ease, transform .3s ease; }
+  .progress-leaf.done{ opacity:1; filter:grayscale(0%); }
+  .progress-label{ text-align:center; font-weight:800; font-size:0.82rem; color: var(--text-soft); margin-bottom:4px; }
+
+  .welcome{ background: var(--panel); border:1px solid rgba(240,168,48,.35); border-radius: var(--radius); box-shadow:0 8px 24px rgba(0,0,0,.3); padding:14px 20px; margin: 10px 0 24px; font-size:0.92rem; text-align:center; }
+
+  .act-divider{ text-align:center; margin: 44px 0 22px; }
+  .act-stroke{ display:block; margin:0 auto 8px; }
+  .act-label{ font-family:'Playfair Display', serif; font-weight:700; font-size:1.3rem; color: var(--ac); }
+  .act-sub{ font-weight:800; font-size:0.78rem; color: var(--text-soft); letter-spacing:0.15em; margin-top:4px; }
+
+  .card{ background:linear-gradient(160deg, var(--panel), var(--bg-mid)); border:1px solid rgba(255,255,255,.08); border-radius: var(--radius); padding:26px 26px 22px; max-width:100%; margin: 0 0 24px; box-shadow:0 10px 34px rgba(0,0,0,.4); position:relative; }
+  .topic-tag{ display:inline-block; background: var(--tagbg, rgba(240,168,48,.16)); color: var(--accent, var(--gold)); border:1px solid var(--tagborder, rgba(240,168,48,.4)); border-radius:999px; padding:3px 13px; font-size:0.78rem; font-weight:800; margin-bottom:10px; }
+  .card h2{ font-size:1.35rem; color: var(--accent, var(--gold)); margin-bottom:6px; }
+
+  .cutscene{ font-style: italic; font-weight:700; font-size:0.95rem; color: var(--cream); border-left:3px solid var(--accent, var(--gold)); padding:8px 14px; margin: 12px 0 18px; background: rgba(255,255,255,0.03); border-radius: 0 10px 10px 0; }
+
+  .patch{ border:1px solid rgba(255,255,255,0.12); border-left:4px solid var(--pc); background: rgba(0,0,0,0.15); border-radius: 0 12px 12px 0; padding:14px 18px; margin-bottom:16px; }
+  .patch .patch-tag{ font-weight:800; letter-spacing:0.03em; font-size:0.78rem; color: var(--pc); margin-bottom:8px; display:inline-block; }
+  .patch .rule{ font-size:0.92rem; margin-bottom:8px; }
+  .patch .examples{ font-size:0.9rem; color: var(--cream); margin-bottom:8px; }
+  .patch .examples li{ margin-bottom:4px; }
+  .chips{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+  .chip{ font-weight:800; font-size:0.76rem; background: rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); border-radius:999px; padding:3px 10px; color: var(--text-soft); }
+
+  .contrast-box{ background: rgba(0,0,0,0.15); border:1px dashed rgba(255,255,255,0.25); border-radius:10px; padding:10px 14px; font-size:0.86rem; margin-top:6px; }
+  .contrast-box b{ color: var(--cream); }
+
+  .mini-timeline{ margin: 12px 0 6px; }
+  .mini-timeline svg{ display:block; }
+  .mini-timeline-labels{ display:flex; justify-content:space-between; font-weight:800; font-size:0.72rem; color: var(--text-soft); margin-top:4px; }
+
+  .wordbank{ background: rgba(0,0,0,0.15); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:12px 16px; font-size:0.86rem; margin-bottom:16px; }
+  .wordbank .tag{ font-weight:800; font-size:0.78rem; color: var(--text-soft); display:block; margin-bottom:6px; }
+
+  ol.qlist{ padding-left:20px; margin:0; }
+  ol.qlist > li{ margin-bottom:14px; padding-left:4px; }
+
+  input.type-in, textarea.type-in-area{
+    font-family:'Courier New', monospace; color:#fff; background:#180f06;
+    border:2px solid rgba(255,255,255,0.15); border-radius:10px;
+  }
+  input.type-in{ font-size:0.9rem; padding:6px 10px; width:100%; max-width:380px; margin-top:6px; }
+  input.type-in.short{ max-width:160px; display:inline-block; margin:0 4px; }
+  input.type-in:focus, textarea.type-in-area:focus{ outline:none; border-color: var(--accent, var(--gold)); }
+  input.type-in::placeholder, textarea.type-in-area::placeholder{ color: rgba(255,255,255,0.35); font-family:'Nunito',sans-serif; }
+  textarea.type-in-area{ font-family:'Nunito',sans-serif; font-size:0.9rem; padding:10px 12px; width:100%; min-height:100px; margin-top:8px; resize:vertical; }
+
+  .mcq{ display:flex; flex-wrap:wrap; gap:6px 20px; margin-top:6px; font-size:0.88rem; }
+  .mcq label{ display:flex; align-items:center; gap:7px; cursor:pointer; }
+  input[type="radio"]{ accent-color: var(--accent, var(--gold)); width:16px; height:16px; }
+
+  .match-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:6px 24px; margin-bottom:10px; }
+  .match-grid p{ margin:0 0 8px; font-size:0.9rem; display:flex; align-items:center; gap:8px; }
+  .match-grid .defs{ font-size:0.86rem; color: var(--text-soft); line-height:1.9; }
+  @media (max-width:560px){ .match-grid{ grid-template-columns: 1fr; } }
+
+  details.check{ margin-top:6px; }
+  details.check summary{ cursor:pointer; font-weight:800; font-size:0.82rem; color: var(--accent, var(--gold)); list-style:none; display:inline-block; }
+  details.check summary::-webkit-details-marker{ display:none; }
+  details.check summary::before{ content:"▸ "; }
+  details.check[open] summary::before{ content:"▾ "; }
+  details.check .answer{ font-size:0.86rem; color: var(--text-soft); margin-top:4px; padding-left:14px; }
+
+  .btn{ font-family:'Nunito',sans-serif; font-weight:800; font-size:0.92rem; padding:12px 26px; border-radius:999px; border:none; cursor:pointer;
+    background: var(--accent, var(--orange)); color:#2a1505; box-shadow:0 4px 16px rgba(232,130,58,.3); transition: transform .15s ease; }
+  .btn:hover{ transform: translateY(-2px); }
+  .btn.done{ opacity:.4; cursor:default; }
+  .btn.done:hover{ transform:none; }
+
+  .listen-btn{ font-weight:800; font-size:0.92rem; color: var(--cream); background: rgba(0,0,0,0.2); border:1px solid var(--accent, var(--slate)); border-radius:999px; padding:10px 20px; cursor:pointer; margin-bottom:12px; }
+  .listen-btn:hover{ box-shadow:0 0 14px rgba(92,122,138,.4); }
+  .listen-note{ font-size:0.8rem; color: var(--text-soft); margin-bottom:14px; }
+
+  .credits{ text-align:center; margin-top:48px; padding: 26px 20px; border-top:1px solid rgba(255,255,255,0.12); font-weight:800; font-size:0.85rem; color: var(--text-soft); line-height:2.1; }
+  .credits .role{ color: var(--gold); }
+
+  #toast{
+    position: fixed; top:20px; left:50%; transform: translate(-50%, -140%);
+    background: var(--panel); border:1px solid var(--gold); border-radius:999px; box-shadow:0 6px 24px rgba(0,0,0,.4);
+    padding:11px 24px; font-weight:800; font-size:0.9rem; color: var(--gold);
+    transition: transform 0.35s ease; z-index:10; white-space:nowrap;
+  }
+  #toast.show{ transform: translate(-50%, 0); }
+  @media (prefers-reduced-motion: reduce){ #toast{ transition:none; } }
+
+  @media (max-width:560px){
+    .hero h1{ font-size:1.5rem; } .card{ padding:20px 18px 18px; }
+    #toast{ font-size:0.8rem; padding:9px 16px; white-space:normal; width:86%; text-align:center; }
+  }
+
+  @media print{
+    body{ background:#fff !important; color:#111; }
+    .print-btn, #progress-wrap, #leaves, #toast, .listen-btn{ display:none; }
+    .card{ background:#fff !important; border:1px solid #999; box-shadow:none; }
+    .card h2{ color:#111 !important; }
+    input.type-in, textarea.type-in-area{ background:#fff; color:#111; }
+    .hero h1{ color:#111; }
+  }
+</style>
+</head>
+<body>
+
+<div id="leaves"></div>
+
+<div class="sheet">
+
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="crest">🍂</div>
+      <h1>The Way of the Present</h1>
+      <p class="tagline">Five forms. One path. No hesitation.</p>
+      <p class="sub">A recap on three old techniques, a deep dive on the newest one, and your first real conditionals, while the leaves fall outside the dojo.</p>
+    </div>
+  </div>
+
+  <button class="print-btn" onclick="window.print()">Print lesson sheet</button>
+
+  <div class="progress-label">Trials progress</div>
+  <div id="progress-wrap">
+    <span class="progress-leaf" data-seg="0">🍂</span>
+    <span class="progress-leaf" data-seg="1">🍂</span>
+    <span class="progress-leaf" data-seg="2">🍂</span>
+    <span class="progress-leaf" data-seg="3">🍂</span>
+    <span class="progress-leaf" data-seg="4">🍂</span>
+    <span class="progress-leaf" data-seg="5">🍂</span>
+    <span class="progress-leaf" data-seg="6">🍂</span>
+  </div>
+
+  <div class="welcome">Try each one before you check the answer. No pressure, just figure out which form fits.</div>
+
+  <!-- ACT I -->
+  <div class="act-divider" style="--ac: var(--sage);">
+    <div class="act-label">Act I</div>
+    <div class="act-sub">THE BRIEFING</div>
+  </div>
+
+  <div class="card" style="--accent: var(--sage); --tagbg: rgba(127,174,84,.16); --tagborder: rgba(127,174,84,.4);">
+    <span class="topic-tag">Briefing 01</span>
+    <h2>The Dojo Courtyard</h2>
+    <div class="cutscene">Before you train, learn the words that actually belong here, not just "good" and "bad."</div>
+
+    <div class="wordbank">
+      <span class="tag">New vocabulary</span>
+      dojo · sensei · katana · stance · duel · opponent · technique · scroll · warrior · blade · meditate · bow &nbsp;·&nbsp;
+      <b>disciplined</b> : trains without fail &nbsp;·&nbsp;
+      <b>fearless</b> : never backs down &nbsp;·&nbsp;
+      <b>relentless</b> : never stops trying &nbsp;·&nbsp;
+      <b>honorable</b> : respectful, fair &nbsp;·&nbsp;
+      <b>exhausted</b> : completely worn out &nbsp;·&nbsp;
+      <b>victorious</b> : the winner
+    </div>
+
+    <p style="font-weight:800; font-size:0.86rem; color:var(--text-soft);">Pick the best word for each situation</p>
+    <ol class="qlist">
+      <li>You train every single day without missing one, no matter how tired you are.
+        <input class="type-in short" type="text">
+        <details class="check"><summary>Check</summary><div class="answer">disciplined</div></details>
+      </li>
+      <li>You've fought ten duels and never once run from a fight.
+        <input class="type-in short" type="text">
+        <details class="check"><summary>Check</summary><div class="answer">fearless</div></details>
+      </li>
+      <li>You keep training long after everyone else has stopped.
+        <input class="type-in short" type="text">
+        <details class="check"><summary>Check</summary><div class="answer">relentless</div></details>
+      </li>
+      <li>You just won the biggest tournament of your life.
+        <input class="type-in short" type="text">
+        <details class="check"><summary>Check</summary><div class="answer">victorious</div></details>
+      </li>
+      <li>You've been sparring for three hours straight.
+        <input class="type-in short" type="text">
+        <details class="check"><summary>Check</summary><div class="answer">exhausted</div></details>
+      </li>
+      <li>You bow to your opponent even after losing.
+        <input class="type-in short" type="text">
+        <details class="check"><summary>Check</summary><div class="answer">honorable</div></details>
+      </li>
+    </ol>
+
+    <p style="font-weight:800; font-size:0.86rem; color:var(--text-soft); margin-top:18px;">Match the word to its meaning</p>
+    <div class="match-grid">
+      <div>
+        <p>1. dojo <input class="type-in short" type="text" style="width:46px; max-width:46px;"></p>
+        <p>2. sensei <input class="type-in short" type="text" style="width:46px; max-width:46px;"></p>
+        <p>3. katana <input class="type-in short" type="text" style="width:46px; max-width:46px;"></p>
+        <p>4. meditate <input class="type-in short" type="text" style="width:46px; max-width:46px;"></p>
+        <p>5. bow <input class="type-in short" type="text" style="width:46px; max-width:46px;"></p>
+        <p>6. blade <input class="type-in short" type="text" style="width:46px; max-width:46px;"></p>
+      </div>
+      <div class="defs">
+        a) a sharp cutting weapon<br>
+        b) a training hall<br>
+        c) to sit quietly and focus the mind<br>
+        d) a curved Japanese sword<br>
+        e) a respected teacher<br>
+        f) to bend forward as a sign of respect
+      </div>
+    </div>
+    <details class="check"><summary>Check</summary><div class="answer">dojo - b, sensei - e, katana - d, meditate - c, bow - f, blade - a</div></details>
+
+    <div class="wordbank" style="margin-top:16px;"><span class="tag">Keep these handy: story connectors</span> first · then · after that · meanwhile · suddenly · eventually · in the end</div>
+
+    <button class="btn" data-node="0" data-name="The Dojo Courtyard" onclick="clearWorld(this)">Complete Scene</button>
+  </div>
+
+  <div class="card" style="--accent: var(--gold); --tagbg: rgba(240,168,48,.16); --tagborder: rgba(240,168,48,.4);">
+    <span class="topic-tag">Briefing 02</span>
+    <h2>The Scrolls of the Present</h2>
+    <div class="cutscene">Three techniques get a quick refresh. Two are brand new, and they're the ones that will decide the final trial.</div>
+
+    <div class="patch" style="--pc: var(--sage);">
+      <span class="patch-tag">RECAP: PRESENT SIMPLE vs PRESENT CONTINUOUS</span>
+      <p class="rule">Present simple: rules and routines that are always true. Present continuous: happening right now.</p>
+      <ul class="examples"><li>A warrior respects his sensei. (always true)</li><li>Look, he's drawing his sword right now. (happening now)</li></ul>
+      <div class="chips"><span class="chip">always</span><span class="chip">every day</span><span class="chip">right now</span></div>
+    </div>
+
+    <div class="patch" style="--pc: var(--slate);">
+      <span class="patch-tag">RECAP: GOING TO</span>
+      <p class="rule">Going to: a decided plan, or a prediction based on something you can see right now.</p>
+      <ul class="examples"><li>I'm going to train with a new sensei next week. (plan)</li><li>Look at his stance, he's going to lose his balance. (evidence)</li></ul>
+      <div class="chips"><span class="chip">already decided</span><span class="chip">evidence</span></div>
+    </div>
+
+    <div class="patch" style="--pc: var(--gold);">
+      <span class="patch-tag">NEW: PRESENT PERFECT SIMPLE</span>
+      <p class="rule">For experience, achievements, or a count, something happened at some point before now, and the exact moment doesn't matter.</p>
+      <ul class="examples"><li>I have trained in three different dojos.</li><li>Have you ever faced a real blade?</li><li>He has won five tournaments.</li></ul>
+      <div class="chips"><span class="chip">ever</span><span class="chip">never</span><span class="chip">already</span><span class="chip">just</span><span class="chip">so far</span></div>
+    </div>
+
+    <div class="patch" style="--pc: var(--red);">
+      <span class="patch-tag">NEW: PRESENT PERFECT CONTINUOUS</span>
+      <p class="rule">For something that started in the past and is still going right now, the focus is on the duration, not the result.</p>
+      <ul class="examples"><li>I have been training since sunrise.</li><li>She has been practicing this technique for two hours.</li></ul>
+      <div class="mini-timeline">
+        <svg viewBox="0 0 400 50" width="100%" height="50" role="img" aria-label="Timeline showing present perfect continuous reaching now, and present perfect simple as a finished point before now">
+          <rect x="10" y="10" width="300" height="10" rx="5" fill="var(--red)" opacity="0.65"/>
+          <line x1="330" y1="2" x2="330" y2="48" stroke="var(--cream)" stroke-width="1" stroke-dasharray="3,3" opacity="0.4"/>
+          <circle cx="230" cy="34" r="6" fill="var(--gold)"/>
+        </svg>
+        <div class="mini-timeline-labels"><span>has been training (reaches now)</span><span>has trained (a finished event)</span></div>
+      </div>
+      <div class="contrast-box"><b>Compare:</b> "I have read that scroll." (finished, a result) vs. "I have been reading that scroll." (still going, or just finished, the process is what matters)</div>
+      <div class="chips"><span class="chip">since</span><span class="chip">for</span><span class="chip">all day</span><span class="chip">lately</span></div>
+    </div>
+
+    <p style="font-weight:800; font-size:0.86rem; color:var(--text-soft); margin-top:18px;">Match the technique to its signal</p>
+    <div class="match-grid">
+      <div>
+        <p>1. Present Simple <input class="type-in short" type="text" style="width:46px; max-width:46px;"></p>
+        <p>2. Present Continuous <input class="type-in short" type="text" style="width:46px; max-width:46px;"></p>
+        <p>3. Going To <input class="type-in short" type="text" style="width:46px; max-width:46px;"></p>
+        <p>4. Present Perfect Simple <input class="type-in short" type="text" style="width:46px; max-width:46px;"></p>
+        <p>5. Present Perfect Continuous <input class="type-in short" type="text" style="width:46px; max-width:46px;"></p>
+      </div>
+      <div class="defs">
+        a) since sunrise, for two hours, still going<br>
+        b) always true, every day<br>
+        c) right now, at this moment<br>
+        d) already decided, or evidence right now<br>
+        e) ever, never, already, a finished count
+      </div>
+    </div>
+    <details class="check"><summary>Check</summary><div class="answer">1 - b, 2 - c, 3 - d, 4 - e, 5 - a</div></details>
+
+    <button class="btn" data-node="1" data-name="The Scrolls of the Present" onclick="clearWorld(this)">Complete Scene</button>
+  </div>
+
+  <!-- ACT II -->
+  <div class="act-divider" style="--ac: var(--sage);">
+    <div class="act-label">Act II</div>
+    <div class="act-sub">THE MISSIONS</div>
+  </div>
+
+  <div class="card" style="--accent: var(--sage); --tagbg: rgba(127,174,84,.16); --tagborder: rgba(127,174,84,.4);">
+    <span class="topic-tag">Mission 01</span>
+    <h2>The Dojo Code</h2>
+    <div class="cutscene">Some things here are always true. Some things are happening right in front of you. Some things are already decided.</div>
+
+    <ol class="qlist">
+      <li>A true warrior ___ (respect) his sensei.
+        <input class="type-in short" type="text">
+        <details class="check"><summary>Check</summary><div class="answer">respects</div></details>
+      </li>
+      <li>Look, he ___ (draw) his katana right now!
+        <input class="type-in short" type="text">
+        <details class="check"><summary>Check</summary><div class="answer">is drawing</div></details>
+      </li>
+      <li>The dojo ___ (open) before sunrise every day.
+        <input class="type-in short" type="text">
+        <details class="check"><summary>Check</summary><div class="answer">opens</div></details>
+      </li>
+      <li>I ___ (train) with a new sensei starting next week, it's already decided.
+        <input class="type-in short" type="text">
+        <details class="check"><summary>Check</summary><div class="answer">am going to train</div></details>
+      </li>
+      <li>Look at his stance, he ___ (lose) his balance.
+        <input class="type-in short" type="text">
+        <details class="check"><summary>Check</summary><div class="answer">is going to lose</div></details>
+      </li>
+      <li>Right now, three students ___ (practice) their forms in the courtyard.
+        <input class="type-in short" type="text">
+        <details class="check"><summary>Check</summary><div class="answer">are practicing</div></details>
+      </li>
+    </ol>
+
+    <p style="font-weight:800; font-size:0.86rem; color:var(--text-soft);">Now you try</p>
+    <p style="font-size:0.84rem; color:var(--text-soft); margin-top:-6px;">Write one dojo rule (present simple), one thing happening right now (present continuous), and one prediction about an upcoming duel (going to).</p>
+    <textarea class="type-in-area" placeholder="Rule: ..."></textarea>
+
+    <button class="btn" data-node="2" data-name="The Dojo Code" onclick="clearWorld(this)">Complete Scene</button>
+  </div>
+
+  <div class="card" style="--accent: var(--red); --tagbg: rgba(193,80,46,.16); --tagborder: rgba(193,80,46,.4);">
+    <span class="topic-tag">Mission 02</span>
+    <h2>The Warrior's Journey</h2>
+    <div class="cutscene">Some things you've done a number of times. Some things you're still doing, right up to this moment. Tell them apart.</div>
+
+    <p style="font-weight:800; font-size:0.86rem; color:var(--text-soft);">Part A: which form fits?</p>
+    <ol class="qlist">
+      <li>My arms are shaking because I ___ since sunrise.
+        <div class="mcq"><label><input type="radio" name="m2-1">have trained</label><label><input type="radio" name="m2-1">have been training</label></div>
+        <details class="check"><summary>Check</summary><div class="answer">have been training, the shaking arms show it's still ongoing</div></details>
+      </li>
+      <li>She ___ three tournaments this year.
+        <div class="mcq"><label><input type="radio" name="m2-2">has won</label><label><input type="radio" name="m2-2">has been winning</label></div>
+        <details class="check"><summary>Check</summary><div class="answer">has won, it's a countable result</div></details>
+      </li>
+      <li>He ___ that same strike for two hours.
+        <div class="mcq"><label><input type="radio" name="m2-3">has practiced</label><label><input type="radio" name="m2-3">has been practicing</label></div>
+        <details class="check"><summary>Check</summary><div class="answer">has been practicing</div></details>
+      </li>
+      <li>Have you ever ___ with a real blade?
+        <div class="mcq"><label><input type="radio" name="m2-4">fought</label><label><input type="radio" name="m2-4">been fighting</label></div>
+        <details class="check"><summary>Check</summary><div class="answer">fought, a one-time experience</div></details>
+      </li>
+      <li>They ___ the ancient scrolls all week.
+        <div class="mcq"><label><input type="radio" name="m2-5">have studied</label><label><input type="radio" name="m2-5">have been studying</label></div>
+        <details class="check"><summary>Check</summary><div class="answer">have been studying</div></details>
+      </li>
+    </ol>
+
+    <p style="font-weight:800; font-size:0.86rem; color:var(--text-soft); margin-top:18px;">Part B: write it both ways</p>
+    <p style="font-size:0.84rem; color:var(--text-soft); margin-top:-6px;">For each scenario, write one sentence emphasizing duration (continuous) and one emphasizing a finished result or count (simple).</p>
+    <p style="font-size:0.9rem; margin-bottom:4px;">1. Practicing sword strikes</p>
+    <input class="type-in" type="text" style="max-width:100%;" placeholder="Continuous: I have been...">
+    <input class="type-in" type="text" style="max-width:100%; margin-top:8px;" placeholder="Simple: I have...">
+    <p style="font-size:0.9rem; margin:14px 0 4px;">2. Waiting for the sensei</p>
+    <input class="type-in" type="text" style="max-width:100%;" placeholder="Continuous: I have been...">
+    <input class="type-in" type="text" style="max-width:100%; margin-top:8px;" placeholder="Simple: I have...">
+
+    <p style="font-weight:800; font-size:0.86rem; color:var(--text-soft); margin-top:18px;">Part C: spot the difference</p>
+    <p style="font-size:0.86rem;">Compare: A) "I have read that scroll." B) "I have been reading that scroll." What's different?</p>
+    <input class="type-in" type="text" style="max-width:100%;">
+    <details class="check"><summary>Check</summary><div class="answer">A sounds finished, a result. B focuses on the process, it might still be going, or just finished but the reading itself is the point, not a count.</div></details>
+
+    <p style="font-weight:800; font-size:0.86rem; color:var(--text-soft); margin-top:18px;">Now you try</p>
+    <p style="font-size:0.84rem; color:var(--text-soft); margin-top:-6px;">Write 2-3 sentences about a real or imagined journey learning something, using both forms.</p>
+    <textarea class="type-in-area" placeholder="I have been..."></textarea>
+
+    <button class="btn" data-node="3" data-name="The Warrior's Journey" onclick="clearWorld(this)">Complete Scene</button>
+  </div>
+
+  <div class="card" style="--accent: var(--gold); --tagbg: rgba(240,168,48,.16); --tagborder: rgba(240,168,48,.4);">
+    <span class="topic-tag">Mission 03</span>
+    <h2>The Sacred Scrolls</h2>
+    <div class="cutscene">The scrolls hold two laws: what is always true, and what will happen if you choose a path.</div>
+
+    <div class="patch" style="--pc: var(--gold);">
+      <span class="patch-tag">TYPE 0 vs TYPE 1</span>
+      <p class="rule">Type 0: if + present simple, present simple, an always-true law. Type 1: if + present simple, will + infinitive, a real possible future.</p>
+      <ul class="examples"><li>If a warrior shows no fear, opponents respect him. (Type 0)</li><li>If you train hard this month, you will pass the trial. (Type 1)</li></ul>
+    </div>
+
+    <p style="font-weight:800; font-size:0.86rem; color:var(--text-soft);">Which type is this?</p>
+    <ol class="qlist">
+      <li>"Water boils at 100 degrees."
+        <div class="mcq"><label><input type="radio" name="m3-t1">Type 0</label><label><input type="radio" name="m3-t1">Type 1</label></div>
+        <details class="check"><summary>Check</summary><div class="answer">Type 0, a fact that's always true</div></details>
+      </li>
+      <li>"If you win this duel, you will move to the next round."
+        <div class="mcq"><label><input type="radio" name="m3-t2">Type 0</label><label><input type="radio" name="m3-t2">Type 1</label></div>
+        <details class="check"><summary>Check</summary><div class="answer">Type 1, a real future possibility</div></details>
+      </li>
+      <li>"A good student always listens to feedback."
+        <div class="mcq"><label><input type="radio" name="m3-t3">Type 0</label><label><input type="radio" name="m3-t3">Type 1</label></div>
+        <details class="check"><summary>Check</summary><div class="answer">Type 0, a general truth</div></details>
+      </li>
+      <li>"If it rains tomorrow, we will train indoors."
+        <div class="mcq"><label><input type="radio" name="m3-t4">Type 0</label><label><input type="radio" name="m3-t4">Type 1</label></div>
+        <details class="check"><summary>Check</summary><div class="answer">Type 1, a real possible future</div></details>
+      </li>
+    </ol>
+
+    <p style="font-weight:800; font-size:0.86rem; color:var(--text-soft); margin-top:18px;">Now fill in the gaps</p>
+    <ol class="qlist">
+      <li>If a blade ___ (touch) water, it ___ (rust).
+        <input class="type-in" type="text" style="max-width:100%;">
+        <details class="check"><summary>Check</summary><div class="answer">touches / rusts (Type 0)</div></details>
+      </li>
+      <li>If you ___ (train) hard this month, you ___ (pass) the trial.
+        <input class="type-in" type="text" style="max-width:100%;">
+        <details class="check"><summary>Check</summary><div class="answer">train / will pass (Type 1)</div></details>
+      </li>
+      <li>If the sensei ___ (ring) the bell, the lesson ___ (end).
+        <input class="type-in" type="text" style="max-width:100%;">
+        <details class="check"><summary>Check</summary><div class="answer">rings / ends (Type 0)</div></details>
+      </li>
+      <li>If you ___ (lose) this duel, you ___ (not / advance) to the final round.
+        <input class="type-in" type="text" style="max-width:100%;">
+        <details class="check"><summary>Check</summary><div class="answer">lose / will not advance (Type 1)</div></details>
+      </li>
+      <li>If a warrior ___ (show) no fear, opponents ___ (respect) him.
+        <input class="type-in" type="text" style="max-width:100%;">
+        <details class="check"><summary>Check</summary><div class="answer">shows / respect (Type 0)</div></details>
+      </li>
+    </ol>
+
+    <p style="font-weight:800; font-size:0.86rem; color:var(--text-soft);">Now you try</p>
+    <p style="font-size:0.84rem; color:var(--text-soft); margin-top:-6px;">Write one Type 0 conditional (a dojo law) and one Type 1 conditional (a real prediction about your next match).</p>
+    <textarea class="type-in-area" placeholder="Type 0: If ..."></textarea>
+
+    <button class="btn" data-node="4" data-name="The Sacred Scrolls" onclick="clearWorld(this)">Complete Scene</button>
+  </div>
+
+  <div class="card" style="--accent: var(--slate); --tagbg: rgba(92,122,138,.2); --tagborder: rgba(92,122,138,.45);">
+    <span class="topic-tag">Mission 04</span>
+    <h2>The Sensei's Recording</h2>
+    <div class="cutscene">Close your eyes and listen. No reading yet.</div>
+
+    <button class="listen-btn" onclick="playRecording()">▶ Play the Sensei's Recording</button>
+    <p class="listen-note">Uses your device's built-in voice. If nothing plays, use the transcript below instead, or have your teacher read it aloud.</p>
+
+    <details class="check" id="transcript-toggle">
+      <summary>Show transcript (only if you really need it)</summary>
+      <div class="answer" id="transcript-text" style="font-size:0.9rem; color:var(--cream); padding-left:0; margin-top:10px;">
+        Welcome to the Shadow Peak Dojo. I am Sensei Aiko, and I have been teaching here for over twenty years. Every morning, students wake up before sunrise and meditate for one hour. Right now, my youngest student is practicing his sword form in the courtyard, he has been practicing the same move for three hours straight. He has never given up on a technique, not once. Tomorrow, he is going to take his first real trial. If he stays calm, he will pass. If he loses focus, he will have to wait another year. I believe in him, because true warriors are made through patience, not luck.
+      </div>
+    </details>
+
+    <p style="font-weight:800; font-size:0.86rem; color:var(--text-soft); margin-top:18px;">Answer from memory</p>
+    <ol class="qlist">
+      <li>How long has Sensei Aiko been teaching at the dojo?
+        <input class="type-in" type="text" style="max-width:100%;">
+      </li>
+      <li>What do the students do every morning?
+        <input class="type-in" type="text" style="max-width:100%;">
+      </li>
+      <li>What has the youngest student been doing for three hours?
+        <input class="type-in" type="text" style="max-width:100%;">
+      </li>
+      <li>What is going to happen tomorrow?
+        <input class="type-in" type="text" style="max-width:100%;">
+      </li>
+      <li>According to the sensei, what will happen if the student loses focus?
+        <input class="type-in" type="text" style="max-width:100%;">
+      </li>
+    </ol>
+
+    <button class="btn" data-node="5" data-name="The Sensei's Recording" onclick="clearWorld(this)">Complete Scene</button>
+  </div>
+
+  <!-- ACT III -->
+  <div class="act-divider" style="--ac: var(--orange);">
+    <div class="act-label">Act III</div>
+    <div class="act-sub">THE SHOWDOWN</div>
+  </div>
+
+  <div class="card" style="--accent: var(--orange); --tagbg: rgba(232,130,58,.18); --tagborder: rgba(232,130,58,.45);">
+    <span class="topic-tag">Final Duel</span>
+    <h2>The Interview</h2>
+    <div class="cutscene">Swords down. No more hints. Let's talk it through.</div>
+
+    <ol class="qlist">
+      <li>What's one rule that's always true in a dojo, or in your favorite game?</li>
+      <li>What are you doing this week to get better at something?</li>
+      <li>Have you ever learned a skill that took a long time to master? Tell me about it.</li>
+      <li>If you practiced something every day for a year, what do you think would happen?</li>
+      <li>What's harder to decide today: perfect simple vs. continuous, or the conditionals?</li>
+    </ol>
+
+    <button class="btn" data-node="6" data-name="The Interview" onclick="clearWorld(this)">Roll Credits</button>
+  </div>
+
+  <div class="credits">
+    Starring: <span class="role">You</span><br>
+    Featuring: Your Teacher<br>
+    Coming Next: Lesson 5
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+  function clearWorld(btn){
+    if (btn.classList.contains('done')) return;
+    var n = btn.getAttribute('data-node');
+    var name = btn.getAttribute('data-name');
+    var leaf = document.querySelector('.progress-leaf[data-seg="' + n + '"]');
+    if (leaf) leaf.classList.add('done');
+    btn.textContent = 'Scene Complete';
+    btn.classList.add('done');
+    var toast = document.getElementById('toast');
+    toast.textContent = '🍂 Scene wrapped: ' + name;
+    toast.classList.add('show');
+    clearTimeout(window._toastTimer);
+    window._toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2200);
+  }
+
+  function playRecording(){
+    var text = document.getElementById('transcript-text').textContent.trim();
+    if ('speechSynthesis' in window){
+      window.speechSynthesis.cancel();
+      var msg = new SpeechSynthesisUtterance(text);
+      msg.rate = 0.92;
+      msg.pitch = 1;
+      window.speechSynthesis.speak(msg);
+    } else {
+      document.getElementById('transcript-toggle').setAttribute('open', 'true');
+      alert("This device can't play audio automatically, the transcript below has been opened for you instead.");
+    }
+  }
+
+  // Falling leaves background
+  var leafEmojis = ['🍁','🍂','🍃'];
+  var leavesEl = document.getElementById('leaves');
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    for (var i = 0; i < 22; i++){
+      var s = document.createElement('div');
+      s.className = 'leaf';
+      s.textContent = leafEmojis[Math.floor(Math.random() * leafEmojis.length)];
+      s.style.left = Math.random() * 100 + '%';
+      s.style.animationDelay = (Math.random() * 9) + 's';
+      s.style.animationDuration = (7 + Math.random() * 5) + 's';
+      leavesEl.appendChild(s);
+    }
+  }
+</script>
+
+</body>
+</html>
